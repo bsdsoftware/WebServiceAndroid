@@ -24,22 +24,24 @@ import java.util.Map;
  */
 public abstract class Operation {
 
-
     public abstract WebServiceTaskResult onSuccess(int statusCode, InputStream inputStream);
     public abstract MethodType getMethodType();
     public abstract String getUrlComplete(String baseUrl);
+    public abstract HttpURLConnection setHeaders(HttpURLConnection connection);
     public abstract HashMap<String, String> getParams();
 
     public HttpURLConnection buildUrlConnection(){
         String url = getUrlComplete(WebService.getInstance().getUrl());
         HttpURLConnection connection = null;
+        HashMap<String, String> params = getParams();
         try {
             Uri uri = Uri.parse(url);
             switch (getMethodType()){
                 case GET:
                     Uri.Builder builder = uri.buildUpon();
-                    if(getParams()!=null){
-                        Iterator it = getParams().entrySet().iterator();
+
+                    if(params!=null){
+                        Iterator it = params.entrySet().iterator();
                         while (it.hasNext()) {
                             Map.Entry pair = (Map.Entry) it.next();
                             builder.appendQueryParameter(pair.getKey().toString(), pair.getValue().toString());
@@ -49,15 +51,17 @@ public abstract class Operation {
                     URL myUrl = new URL(builder.toString());
                     connection = (HttpURLConnection) myUrl.openConnection();
                     connection.setRequestMethod("GET");
+                    connection = setHeaders(connection);
                     break;
                 case POST:
                     myUrl = new URL(url);
                     connection = (HttpURLConnection) myUrl.openConnection();
                     connection.setRequestMethod("POST");
+                    connection = setHeaders(connection);
 
                     JSONObject jsonObject = new JSONObject();
-                    if(getParams()!=null){
-                        Iterator it = getParams().entrySet().iterator();
+                    if(params!=null){
+                        Iterator it = params.entrySet().iterator();
                         while (it.hasNext()) {
                             Map.Entry pair = (Map.Entry) it.next();
                             jsonObject.put((String)pair.getKey(),pair.getValue());

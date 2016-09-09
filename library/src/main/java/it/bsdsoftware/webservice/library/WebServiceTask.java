@@ -2,9 +2,6 @@ package it.bsdsoftware.webservice.library;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.util.Arrays;
 import java.util.List;
 
@@ -56,33 +53,9 @@ public class WebServiceTask extends AsyncTask<Void, Integer, WebServiceTaskResul
 
     @Override
     protected WebServiceTaskResult doInBackground(Void... params) {
+        WebServiceSyncTask webServiceSyncTask = new WebServiceSyncTask();
         for(Operation operation : operations){
-            HttpURLConnection urlConnection = null;
-            WebServiceTaskResult result;
-            try {
-                urlConnection = operation.buildUrlConnection();
-                urlConnection.connect();
-                Integer statuCode = urlConnection.getResponseCode();
-                if (operation.validStatusCodes().contains(statuCode)) {
-                    InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
-                    result = operation.onSuccess(statuCode, inputStream);
-                } else {
-                    Throwable t = null;
-                    if (statuCode == 404) {
-                        t = new Throwable("");
-                    }
-                    InputStream errorStream = urlConnection.getErrorStream();
-                    result = operation.onFail(statuCode, t, errorStream);
-                }
-            } catch (Throwable t) {
-                InputStream errorStream = null;
-                if(urlConnection!=null)
-                    errorStream = urlConnection.getErrorStream();
-                result = operation.onFail(-1, t, errorStream);
-            } finally {
-                if(urlConnection!=null)
-                    urlConnection.disconnect();
-            }
+            WebServiceTaskResult result = webServiceSyncTask.getResult(operation);
             if(result!=null){
                 if(result.result || this.result == null){
                     this.result = result;

@@ -3,13 +3,14 @@ package it.bsdsoftware.webservice.library;
 /**
  * Created by Simone on 30/06/16.
  */
-public class WebServiceTaskResult {
+public class WebServiceTaskResult<T> {
 
     public final boolean result;
     public final String message;
     public final Throwable exception;
+    public T data;
 
-    public static WebServiceTaskResult ok = new WebServiceTaskResult(true);
+    public static WebServiceTaskResult<?> ok = new WebServiceTaskResult(true);
 
     public static WebServiceTaskResult fail(String msg) {
         return fail(null, msg);
@@ -24,7 +25,7 @@ public class WebServiceTaskResult {
     }
 
     public static WebServiceTaskResult success(String msg){
-        return new WebServiceTaskResult(true, msg, null);
+        return new WebServiceTaskResult(true, msg);
     }
 
     private WebServiceTaskResult(boolean result, String msg, Throwable t) {
@@ -33,10 +34,22 @@ public class WebServiceTaskResult {
         this.exception = t;
     }
 
+    public WebServiceTaskResult(T data){
+        this(true);
+        this.data = data;
+    }
+
+    public WebServiceTaskResult(T data, String msg){
+        this(true, msg);
+        this.data = data;
+    }
+
+    private WebServiceTaskResult(boolean result, String msg) {
+        this(result, msg, null);
+    }
+
     private WebServiceTaskResult(boolean result) {
-        this.result = result;
-        this.message = null;
-        this.exception = null;
+        this(result, null, null);
     }
 
     public String getMessageForUser() {
@@ -80,3 +93,4 @@ public class WebServiceTaskResult {
         return new WebServiceTaskResult(result, msg, t);
     }
 }
+
