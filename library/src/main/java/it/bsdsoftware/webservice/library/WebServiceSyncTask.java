@@ -3,6 +3,8 @@ package it.bsdsoftware.webservice.library;
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Simone on 09/09/16.
@@ -17,6 +19,7 @@ public class WebServiceSyncTask {
             urlConnection.connect();
             Integer statuCode = urlConnection.getResponseCode();
             if (operation.validStatusCodes().contains(statuCode)) {
+                operation.setHeadersResponse(urlConnection.getHeaderFields());
                 InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
                 result = operation.onSuccess(statuCode, inputStream);
             } else {

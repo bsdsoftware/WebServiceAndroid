@@ -24,6 +24,8 @@ import java.util.Map;
  */
 public abstract class Operation {
 
+    protected Map<String, List<String>> headersResponse;
+
     public abstract WebServiceTaskResult onSuccess(int statusCode, InputStream inputStream);
     public abstract MethodType getMethodType();
     public abstract String getUrlComplete(String baseUrl);
@@ -131,6 +133,10 @@ public abstract class Operation {
         } else {
             return WebServiceTaskResult.fail(String.format("Status Code: %d", statusCode));
         }
+    }
+
+    public void setHeadersResponse(Map<String, List<String>> headersResponse) {
+        this.headersResponse = headersResponse;
     }
 
     protected String getCharset(){
