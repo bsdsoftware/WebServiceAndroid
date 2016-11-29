@@ -30,12 +30,12 @@ public abstract class Operation {
     public abstract MethodType getMethodType();
     public abstract String getUrlComplete(String baseUrl);
     public abstract HttpURLConnection setHeaders(HttpURLConnection connection);
-    public abstract HashMap<String, String> getParams();
+    public abstract HashMap<String, Object> getParams();
 
     public HttpURLConnection buildUrlConnection(){
         String url = getUrlComplete(WebService.getInstance().getUrl());
         HttpURLConnection connection = null;
-        HashMap<String, String> params = getParams();
+        HashMap<String, Object> params = getParams();
         try {
             Uri uri = Uri.parse(url);
             switch (getMethodType()){
